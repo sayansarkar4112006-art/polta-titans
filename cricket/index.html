@@ -306,6 +306,8 @@ look: { skin: "#c99064", hair: "puff", hc: "#16100b", beard: "none", face: "oval
 look: { skin: "#ad7349", hair: "long", hc: "#120d0a", beard: "stubble", face: "oval" } },
 { id: "ghoton", name: "Ghoton", role: "Medium-fast All-rounder", short: "AR", bat: 72, bowl: 77, type: "medium", no: 8,
 look: { skin: "#b9804f", hair: "quiff", hc: "#1a120c", beard: "goatee", band: "#22d3ee", face: "round" } },
+{ id: "jay", name: "Jay", role: "Wrist Spinner (Leg-spin)", short: "SPIN", bat: 41, bowl: 84, type: "spin", wrist: true, no: 23,
+look: { skin: "#c4895c", hair: "curly", hc: "#15100b", beard: "stubble", band: "#a855f7", face: "oval" } },
 ];
 const ABIL = {
 ankush: { icon: "🚀", name: "Six Machine", desc: "Lofted shots fly further (+loft power)", bat: { loft: 0.07 } },
@@ -325,9 +327,10 @@ tanay: { icon: "⚡", name: "Quick Runner", desc: "Much safer extra runs", bat: 
 aryaan: { icon: "🎈", name: "Flight Master", desc: "Flighted balls dip and trick batters", bowl: { flight: 0.07 } },
 rahat: { icon: "⛈️", name: "Thunderbolt", desc: "The fastest bowler in the squad", bowl: { kmh: 8, T: 0.95 } },
 ghoton: { icon: "🦁", name: "Clutch Player", desc: "Plays best in the last 2 overs (bat & ball)", clutch: true },
+jay: { icon: "🪃", name: "Leg-Spin Wizard", desc: "Leg breaks rip away; the flipper skids through", bowl: { turn: 1.25, leg: 0.04, flipper: 0.06, wgoogly: 0.04 } },
 };
-const SIGC = { ankush: "c_flex", anindya: "c_bow", saumya: "c_salute", sayan: "c_airplane", mostakin: "c_kneel", protikhon: "c_dab", abhirup: "c_point", prithviraj: "c_flex", dibakor: "c_salute", reetam: "c_jump", irfan: "c_bow", sanjay: "c_dab", dev: "c_airplane", tanay: "c_jump", aryaan: "c_point", rahat: "c_kneel", ghoton: "c_roar" };
-const SIG_NAME = { c_flex: "Muscle Flex", c_bow: "Royal Bow", c_salute: "Army Salute", c_airplane: "Airplane Run", c_kneel: "Knee Slide", c_dab: "The Dab", c_point: "Sky Point", c_jump: "Jump & Punch", c_roar: "Lion Roar" };
+const SIGC = { ankush: "c_flex", anindya: "c_bow", saumya: "c_salute", sayan: "c_airplane", mostakin: "c_kneel", protikhon: "c_dab", abhirup: "c_point", prithviraj: "c_flex", dibakor: "c_salute", reetam: "c_jump", irfan: "c_bow", sanjay: "c_dab", dev: "c_airplane", tanay: "c_jump", aryaan: "c_point", rahat: "c_kneel", ghoton: "c_roar", jay: "c_twirl" };
+const SIG_NAME = { c_flex: "Muscle Flex", c_bow: "Royal Bow", c_salute: "Army Salute", c_airplane: "Airplane Run", c_kneel: "Knee Slide", c_dab: "The Dab", c_point: "Sky Point", c_jump: "Jump & Punch", c_roar: "Lion Roar", c_twirl: "Wrist Twirl" };
 const PMAP = Object.fromEntries(PLAYERS.map((p) => [p.id, p]));
 const KITS = {
 Red: { main: "#d62828", dark: "#7f1414", trim: "#ffd166", text: "#fff" },
@@ -546,6 +549,7 @@ else if (pose === "c_dab") { J.head = [-6, -70]; J.neck = [-2, -60]; J.lh = [-8,
 else if (pose === "c_flex") { const f = 2 * w; J.lh = [-17, -78 - f]; J.rh = [17, -78 - f]; J.armBend = [-1.5, 1.5]; J.lf = [-11, 0]; J.rf = [11, 0]; }
 else if (pose === "c_point") { const b2 = j * 3; for (const k of ["hip", "neck", "head"]) J[k][1] -= b2; J.rh = [6, -110 - b2]; J.lh = [-16, -33 - b2]; J.armBend = [1, 0.1]; }
 else if (pose === "c_kneel") { J.hip = [0, -17]; J.neck = [-3, -47]; J.head = [-5, -61]; J.lf = [-15, 0]; J.rf = [10, -2]; J.legBend = [-1, 1]; J.lh = [-24, -82 - j * 4]; J.rh = [22, -82 - j * 4]; J.armBend = [0.4, -0.4]; }
+else if (pose === "c_twirl") { const a = T * 7; J.hip = [0, -31]; J.neck = [w * 2, -61]; J.head = [w * 3, -75]; J.lf = [-9, 0]; J.rf = [9, 0]; J.lh = [-30, -58]; J.rh = [26 + Math.cos(a) * 10, -80 + Math.sin(a) * 10]; J.armBend = [0.3, -0.6]; }
 else if (pose === "c_roar") { J.hip = [0, -27]; J.neck = [0, -56]; J.head = [0, -71]; J.lf = [-14, 0]; J.rf = [14, 0]; J.legBend = [-1, 1]; J.lh = [-22, -66 - j * 5]; J.rh = [22, -66 - j * 5]; J.armBend = [-1.3, 1.3]; }
 }
 if (J.bat != null) { const nb = ((J.bat % 6.2832) + 6.2832) % 6.2832; J.batBehind = nb > 2.2 && nb < 4.6; }
@@ -705,7 +709,9 @@ const DELIVERIES = {
 fast: [["yorker", "Yorker"], ["good", "Good Length"], ["bouncer", "Bouncer"], ["slower", "Slower Ball"]],
 medium: [["yorker", "Yorker"], ["good", "Good Length"], ["bouncer", "Bouncer"], ["slower", "Slower Ball"]],
 spin: [["stock", "Stock Ball"], ["googly", "Googly"], ["arm", "Arm Ball"], ["flight", "Flighted"]],
+wrist: [["leg", "Leg Break"], ["wgoogly", "Googly"], ["flipper", "Flipper"], ["topspin", "Top-spinner"]],
 };
+const delKind = (id) => (PMAP[id] && PMAP[id].wrist ? "wrist" : PMAP[id] ? PMAP[id].type : "medium");
 function deliveryParams(type, dkey, acc, bowlSk, lineSel) {
 let T = type === "fast" ? 0.84 - (bowlSk - 70) / 1200 : type === "medium" ? 0.96 : 1.18;
 let kmh = type === "fast" ? 122 + (bowlSk - 70) * 0.6 + rnd() * 6 : type === "medium" ? 108 + rnd() * 10 : 74 + rnd() * 12;
@@ -717,6 +723,10 @@ if (dkey === "slower") { T *= 1.25; kmh *= 0.82; bz = 0.74; hA = 26; wf = 0.9; m
 if (dkey === "stock") { bz = 0.7; turn = 14; drift = 4; loop = 1.6; mu = -0.02; }
 if (dkey === "googly") { bz = 0.7; turn = -15; drift = -3; loop = 1.6; wf = 0.9; mu = -0.05; }
 if (dkey === "arm") { T *= 0.9; bz = 0.74; turn = 0; loop = 1.1; wf = 0.92; mu = -0.04; }
+if (dkey === "leg") { bz = 0.7; turn = -17; drift = -4; loop = 1.8; mu = -0.03; }
+if (dkey === "wgoogly") { bz = 0.7; turn = 15; drift = 3; loop = 1.7; wf = 0.9; mu = -0.05; }
+if (dkey === "flipper") { T *= 0.86; kmh += 8; bz = 0.84; hA = 14; turn = 0; loop = 0.9; wf = 0.88; mu = -0.06; }
+if (dkey === "topspin") { T *= 1.05; bz = 0.66; hA = 42; turn = 2; loop = 2.2; wf = 0.95; mu = -0.03; }
 if (dkey === "flight") { T *= 1.15; bz = 0.8; turn = 10; loop = 2.4; wf = 1.1; mu = 0.02; }
 lineSel = lineSel || "stumps";
 const base = lineSel === "off" ? -11 : lineSel === "leg" ? 11 : 0;
@@ -862,7 +872,7 @@ let guard = 0;
 while (!inn.done && guard++ < 400) {
 if (!inn.bowler) inn.bowler = cpuPickBowler(M, inn);
 const type = PMAP[inn.bowler].type; const acc = cpuAccuracy(inn.bowler, M);
-const del = makeDelivery(M, inn, inn.bowler, cpuDelivery(type, M, inn), acc, cpuLine(M, inn));
+const del = makeDelivery(M, inn, inn.bowler, cpuDelivery(delKind(inn.bowler), M, inn), acc, cpuLine(M, inn));
 let res = null;
 if (!del.wide) {
 const sh = cpuShot(inn, M, del);
@@ -1037,7 +1047,8 @@ const bat = skill(inn.striker, "bat");
 if (del.dkey === "yorker") { loftW *= 0.35; defW += 0.2; }
 if (del.dkey === "bouncer") { loftW *= bat > 75 ? 1.1 : 0.5; defW += 0.1; }
 if (del.dkey === "slower" || del.dkey === "flight") loftW *= 1.4;
-if (del.dkey === "googly" || del.dkey === "arm") defW += 0.1;
+if (["googly", "arm", "wgoogly", "flipper"].includes(del.dkey)) defW += 0.1;
+if (del.dkey === "topspin") loftW *= 1.2;
 if (Math.abs(del.line) > 14) { defW += 0.15; loftW *= 0.7; }
 if (bat > 80) loftW *= 1.25; else if (bat < 50) { loftW *= 0.6; defW += 0.1; }
 }
@@ -1047,7 +1058,8 @@ function cpuDelivery(type, M, inn) {
 const d = DELIVERIES[type];
 if (!M || !inn || rnd() > curDiff(M).smart) return d[Math.floor(rnd() * d.length)][0];
 const left = innBalls(M, inn) - inn.balls, bat = skill(inn.striker, "bat");
-const w = type === "spin" ? [["stock", 3], ["googly", bat > 75 ? 3 : 1.5], ["arm", 1.5], ["flight", bat < 60 ? 2.5 : 1]]
+const w = type === "wrist" ? [["leg", 3], ["wgoogly", bat > 75 ? 2.6 : 1.4], ["flipper", left <= 6 ? 2.5 : 1.2], ["topspin", bat < 60 ? 2 : 1]]
+: type === "spin" ? [["stock", 3], ["googly", bat > 75 ? 3 : 1.5], ["arm", 1.5], ["flight", bat < 60 ? 2.5 : 1]]
 : [["yorker", left <= 6 ? 4 : 1.2], ["good", 3], ["bouncer", bat < 60 ? 2 : 0.8], ["slower", bat > 78 ? 2 : 1]];
 return wpick(w);
 }
@@ -1637,7 +1649,7 @@ refreshScene(); renderHud();
 if (bowlHuman()) { G.phase = "pickDelivery"; return deliveryPicker(); }
 const type = PMAP[inn.bowler].type;
 G.acc = cpuAccuracy(inn.bowler, G.M);
-G.dkey = cpuDelivery(type, G.M, inn); G.lineSel = cpuLine(G.M, inn);
+G.dkey = cpuDelivery(delKind(inn.bowler), G.M, inn); G.lineSel = cpuLine(G.M, inn);
 G.useSuper = false;
 if (!G.practice && spFull(inn.bowl) && (isClutch(G.M, inn) || rnd() < 0.3)) { G.useSuper = true; G.sp[inn.bowl] = 0; toast(`⭐ ${PMAP[inn.bowler].name} uses SUPER BALL!`); }
 startRunup();
@@ -1652,10 +1664,10 @@ ACT.pbowler = (v) => { if (G.online) { setCtrl(""); return onlineSend({ t: "bowl
 function deliveryPicker() {
 const inn = G.inn, type = PMAP[inn.bowler].type, team = G.M.teams[inn.bowl];
 const sup = spFull(inn.bowl) && !G.practice;
-setCtrl(`<div class="cp"><div class="who">${team.ctl && !G.practice ? esc(team.ctl) + " · " : ""}${PMAP[inn.bowler].name} (${typeIcon(type)}) ${stamBar(stamina(inn.bowler, inn))}: choose delivery</div>
+setCtrl(`<div class="cp"><div class="who">${team.ctl && !G.practice ? esc(team.ctl) + " · " : ""}${PMAP[inn.bowler].name} (${PMAP[inn.bowler].wrist ? "🌀 Wrist spin" : typeIcon(type)}) ${stamBar(stamina(inn.bowler, inn))}: choose delivery</div>
 ${sup ? `<button class="chip superc ${G.useSuper ? "on" : ""}" data-a="psuper">⭐ SUPER BALL ${G.useSuper ? "ON" : "(tap to use)"}</button>` : ""}
 <div class="chips linechips"><span class="muted xs">Line:</span>${[["off", "Outside off"], ["stumps", "Stumps"], ["leg", "Leg side"]].map(([k, l]) => `<button class="chip ${BOWL_LINE === k ? "on" : ""}" data-a="pline" data-v="${k}">${l}</button>`).join("")}</div>
-<div class="dgrid">${DELIVERIES[type].map(([k, l]) => `<button class="btn" data-a="pdel" data-v="${k}">${l}</button>`).join("")}</div></div>`);
+<div class="dgrid">${DELIVERIES[delKind(inn.bowler)].map(([k, l]) => `<button class="btn" data-a="pdel" data-v="${k}">${l}</button>`).join("")}</div></div>`);
 }
 let BOWL_LINE = "stumps", BAT_DIR = "straight";
 ACT.pline = (v) => { BOWL_LINE = v; deliveryPicker(); };
@@ -2397,7 +2409,7 @@ const pick = (a) => a[Math.floor(rnd() * a.length)];
 function spFull(ti) { return !!(G && G.sp && G.sp[ti] >= 100); }
 ACT.setdiff = (v) => { SAVE.diff = v; persist(); ACT.settings(); };
 const COMM = { line: "" };
-const DEL_NAME = { yorker: "yorker", good: "good length ball", bouncer: "bouncer", slower: "slower ball", stock: "stock ball", googly: "googly", arm: "arm ball", flight: "flighted delivery" };
+const DEL_NAME = { yorker: "yorker", good: "good length ball", bouncer: "bouncer", slower: "slower ball", stock: "stock ball", googly: "googly", arm: "arm ball", flight: "flighted delivery", leg: "leg break", wgoogly: "googly", flipper: "flipper", topspin: "top-spinner" };
 function commReset() { COMM.line = ""; try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {} }
 function setComm(t) {
 COMM.line = t || "";
